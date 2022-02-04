@@ -18,12 +18,16 @@ public class Main {
             representarTablero();
             System.out.print("Indique una posición > ");
             respuesta = sc.nextInt();
-            if (respuesta > 0 && respuesta < 10) {
+            if (respuesta > 0 && respuesta < 10 ) {
                 modificarTableroU(respuesta);
                 representarTablero();
                 modificarTableroM();
             }
         } while (!respuesta_terminate.equals("N"));
+    }
+
+    static boolean check(int respuesta){
+        return true;
     }
 
     static void terminarPartida() {
@@ -99,14 +103,19 @@ public class Main {
 
     }
 
-    static void modificarTableroU(int respuesta) {
+    static int[] devolverPosicion(int respuesta){
         if (respuesta <= 3) {
-            gui[0][respuesta - 1] = Main.varX;
+            return new int[]{0, respuesta-1};
         } else if (respuesta <= 6) {
-            gui[1][respuesta - 4] = Main.varX;
+            return new int[]{1, respuesta-4};
         } else {
-            gui[2][respuesta - 7] = Main.varX;
+            return new int[]{2, respuesta-7};
         }
+    }
+
+    static void modificarTableroU(int respuesta) {
+        int []temp = devolverPosicion(respuesta);
+        gui[temp[0]][temp[1]]=varX;
         contadorX++;
         comprobarGanador(Main.varX);
     }
