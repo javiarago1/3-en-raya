@@ -1,6 +1,5 @@
-import java.util.Random;
 import java.util.Scanner;
-import java.util.*;
+
 
 public class Main {
     static final String[][] gui = new String[3][3];
@@ -8,9 +7,9 @@ public class Main {
     static final String varO = "\u00F8";
     static Scanner sc = new Scanner(System.in);
     static String respuesta_terminate = "";
-    static int[] tempPosicion = new int[2];
+    static int[] tempPosicionU = new int[2];
+    static int[] tempPosicionM = new int[2];
     static int contadorTurnos;
-    static Random r = new Random();
     static boolean amenaza;
     static boolean fin;
 
@@ -26,7 +25,6 @@ public class Main {
             respuesta = sc.nextInt();
             if (respuesta > 0 && respuesta < 10 && check(devolverPosicion(respuesta))) {
                 modificarTableroU();
-                representarTablero();
                 if (contadorTurnos > 4) {
                     mostrarResultado();
                     System.out.println("Ha sido empate");
@@ -39,7 +37,6 @@ public class Main {
     }
 
     static int[] devolverLugar() {
-        Vector vector = new Vector();
         for (int i = 0; i < gui.length; i++) {
             for (int j = 0; j < gui[i].length; j++) {
                 if (!gui[i][j].equals(varO) && !gui[i][j].equals(varX)) {
@@ -52,7 +49,7 @@ public class Main {
 
     static void modificarTableroM() {
         if (amenaza) {
-            gui[tempPosicion[0]][tempPosicion[1]] = varO;
+            gui[tempPosicionM[0]][tempPosicionM[1]] = varO;
             amenaza = false;
         } else {
             int[] array = devolverLugar();
@@ -73,7 +70,9 @@ public class Main {
             fin=true;
             contadorTurnos=0;
             fill();
-
+        }
+        else {
+            System.exit(0);
         }
     }
 
@@ -101,28 +100,25 @@ public class Main {
         if (contador == 2) {
             if (x == 0) {
                 System.out.println("1 Solucionar en x: " + fila + " y " + columna);
-                tempPosicion[0] = fila;
-                tempPosicion[1] = columna;
+                tempPosicionM[0] = fila;
+                tempPosicionM[1] = columna;
             } else if (x == 1) {
                 System.out.println("2 Solucionar en x: " + columna + " y " + fila);
-                tempPosicion[0] = columna;
-                tempPosicion[1] = fila;
+                tempPosicionM[0] = columna;
+                tempPosicionM[1] = fila;
             } else {
                 System.out.println("3 Solucionar en x: " + columna + " y " + fila);
-                tempPosicion[0] = fila;
-                tempPosicion[1] = columna;
+                tempPosicionM[0] = fila;
+                tempPosicionM[1] = columna;
             }
             System.out.println("amenaza");
             amenaza = true;
-        } else {
-
         }
     }
 
     static boolean comprobarFyC(String simbolo) {
         String[] temp = new String[3];
-        int valorPrimero = 0, valorSegundo = 0, incrementer = 1, k_ = 0;
-        boolean cambio = false;
+        int valorPrimero, valorSegundo, incrementer = 1, k_ = 0;
         for (int x = 0; x < 2; x++) {
             for (int i = 0; i < gui.length; i++) {
                 for (int j = 0, contTemp = 0; j < gui[i].length; j++) {
@@ -154,7 +150,6 @@ public class Main {
 
             k_ = 2;
             incrementer = -1;
-            cambio = true;
         }
         return false;
     }
@@ -171,6 +166,9 @@ public class Main {
             System.out.println("Ha ganado el jugador --> " + simbolo);
             terminarPartida();
         }
+        else {
+            representarTablero();
+        }
     }
 
     static int[] devolverPosicion(int respuesta) {
@@ -185,15 +183,16 @@ public class Main {
             x = 2;
             y = respuesta - 7;
         }
-        tempPosicion[0] = x;
-        tempPosicion[1] = y;
+        tempPosicionU[0] = x;
+        tempPosicionU[1] = y;
         return new int[]{x, y};
     }
 
     static void modificarTableroU() {
-        gui[tempPosicion[0]][tempPosicion[1]] = varX;
-        comprobarGanador(varX);
+        gui[tempPosicionU[0]][tempPosicionU[1]] = varX;
         contadorTurnos++;
+        comprobarGanador(varX);
+
     }
 
     static void fill() {
