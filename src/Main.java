@@ -21,7 +21,6 @@ public class Main {
     static int contadorTurnos;
     static boolean amenaza;
     static boolean fin, ganar;
-    static Random rd = new Random();
 
 
     public static void main(String[] args) {
