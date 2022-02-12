@@ -1,10 +1,17 @@
 import java.util.Random;
 import java.util.Scanner;
 
+
 public class Main {
+    static final String COLOR_MORADO = "\u001B[35m";
+    static final String COLOR_AMARILLO = "\u001B[33m";
+    static final String COLOR_AZUL = "\u001B[34m";
+    static final String COLOR_X = "\u001B[32m";
+    static final String COLOR_O = "\u001B[31m";
+    static final String COLOR_INICIAL = "\u001B[0m";
     static final String[][] gui = new String[3][3];
-    static final String varX = "x";
-    static final String varO = "\u00F8";
+    static final String varX = COLOR_X + "x" + COLOR_INICIAL;
+    static final String varO = COLOR_O + "\u00F8" + COLOR_INICIAL;
     static Scanner sc = new Scanner(System.in);
     static String respuesta_terminate = "";
     static int respuesta;
@@ -18,24 +25,23 @@ public class Main {
 
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
         fill();
         do {
             fin = false;
-            System.out.println("fallo");
             representarTablero();
-            System.out.print("Indique una posición > ");
-            respuesta = sc.nextInt();
-            if (respuesta > 0 && respuesta < 10 && check(devolverPosicion(respuesta))) {
-                modificarTableroU();
-                if (contadorTurnos > 4) {
-                    mostrarResultado();
-                    System.out.println("Ha sido empate");
-                    terminarPartida();
-                } else if (!fin) {
-                    modificarTableroM();
+            do {
+                System.out.print(COLOR_MORADO + "Indique una posición > " + COLOR_INICIAL);
+                while (!sc.hasNextInt()) {
+                    System.out.print(COLOR_MORADO + "Indique una posición > " + COLOR_INICIAL);
+                    sc.next();
                 }
+                respuesta = sc.nextInt();
+            } while (respuesta <= 0 || respuesta >= 10 || !check(devolverPosicion(respuesta)));
+            modificarTableroU();
+            if (!fin) {
+                modificarTableroM();
             }
+
         } while (!respuesta_terminate.equalsIgnoreCase("N"));
     }
 
@@ -52,28 +58,22 @@ public class Main {
 
     static void modificarTableroM() {
         if (ganar) {
-            System.out.println(tempPosicionM[0]);
-            System.out.println(tempPosicionM[1]);
             gui[tempPosicionG[0]][tempPosicionG[1]] = varO;
             ganar = false;
         } else if (amenaza) {
             gui[tempPosicionM[0]][tempPosicionM[1]] = varO;
             amenaza = false;
-        } else {
-            if (contadorTurnos == 1) {
-                switch (respuesta) {
-                    case 1, 3, 7, 9, 2, 4, 6, 8 -> gui[1][1] = varO;
-                    default -> {
-                        int[] array = {1, 3, 7, 9};
-                        int[] arrayTemp = devolverPosicion(array[rd.nextInt(4)]);
-                        gui[arrayTemp[0]][arrayTemp[1]] = varO;
-                    }
-                }
-            } else {
-                int[] array = devolverLugar();
-                assert array != null;
-                gui[array[0]][array[1]] = varO;
+        } else if (contadorTurnos == 1) {
+            switch (respuesta) {
+                case 1, 3, 7, 9, 2, 4, 6, 8 -> gui[1][1] = varO;
+                default -> gui[0][2] = varO;
             }
+        } else if (contadorTurnos == 2 && gui[0][2].equals(varX) && gui[2][0].equals(varX)) {
+            gui[2][1]=varO;
+        } else {
+            int[] array = devolverLugar();
+            assert array != null;
+            gui[array[0]][array[1]] = varO;
         }
         comprobarGanador(varO);
     }
@@ -83,32 +83,31 @@ public class Main {
     }
 
     static void terminarPartida() {
-        System.out.println("¿Quieres seguir jugando? (S/N)");
+        System.out.println(COLOR_AZUL + "¿Quieres seguir jugando? (S/N)" + COLOR_INICIAL);
+        System.out.print("---> ");
         respuesta_terminate = sc.next();
+
         if (!respuesta_terminate.equals("N")) {
             fin = true;
             contadorTurnos = 0;
-            amenaza=false;
+            amenaza = false;
             fill();
-        } else {
-            System.exit(0);
         }
     }
 
     static void defensa(String[] tempArray, int fila, int x, String simbolo) {
         if (simbolo.equals(varX)) {
-        int ocurrenciasO = 0;
-        int contador = 0;
-        int columna = 0;
-        for (int i = 0; i < tempArray.length; i++) {
-            if (tempArray[i].equals(varX)) {
-                ocurrenciasO--;
-                contador++;
-            } else if (tempArray[i].equals(varO)) {
-                ocurrenciasO++;
-                contador--;
-            } else {
-                if (fila == -1 && x == 3) {
+            int ocurrenciasO = 0;
+            int ocurrenciasX = 0;
+            int columna = 0;
+            for (int i = 0; i < tempArray.length; i++) {
+                if (tempArray[i].equals(varX)) {
+                    ocurrenciasO--;
+                    ocurrenciasX++;
+                } else if (tempArray[i].equals(varO)) {
+                    ocurrenciasO++;
+                    ocurrenciasX--;
+                } else if (fila == -1 && x == 3) {
                     fila = i;
                     columna = Math.abs(i - 2);
                 } else if (fila == 1 && x == 3) {
@@ -118,64 +117,44 @@ public class Main {
                     columna = i;
                 }
             }
-        }
-            System.out.println("contadodor de los cirkulitos: " + ocurrenciasO);
             if (ocurrenciasO == 2) {
-                if (x == 0) {
-                    System.out.println("1 Solucionar en x: " + fila + " y " + columna);
-                    tempPosicionG[0] = fila;
-                    tempPosicionG[1] = columna;
-                } else if (x == 1) {
-                    System.out.println("2 Solucionar en x: " + columna + " y " + fila);
-                    tempPosicionG[0] = columna;
-                    tempPosicionG[1] = fila;
-                } else {
-                    System.out.println("3 Solucionar en x: " + columna + " y " + fila);
-                    tempPosicionG[0] = fila;
-                    tempPosicionG[1] = columna;
-                }
-                System.out.println("Procedemos a mostrar los resultados -- -- - -> ");
-                System.out.println(tempPosicionG[0]);
-                System.out.println(tempPosicionG[1]);
-                System.out.println("dsdasds");
+                solucionMaquina(x, fila, columna, tempPosicionG);
                 ganar = true;
-            } else if (contador == 2) {
-                if (x == 0) {
-                    System.out.println("1 Solucionar en x: " + fila + " y " + columna);
-                    tempPosicionM[0] = fila;
-                    tempPosicionM[1] = columna;
-                } else if (x == 1) {
-                    System.out.println("2 Solucionar en x: " + columna + " y " + fila);
-                    tempPosicionM[0] = columna;
-                    tempPosicionM[1] = fila;
-                } else {
-                    System.out.println("3 Solucionar en x: " + columna + " y " + fila);
-                    tempPosicionM[0] = fila;
-                    tempPosicionM[1] = columna;
-                }
-                amenaza = true;
+            } else if (ocurrenciasX == 2) {
+                solucionMaquina(x, fila, columna, tempPosicionM);
+                amenaza = !ganar;
             }
         }
+    }
 
+    static void solucionMaquina(int x, int fila, int columna, int[] array) {
+        if (x == 1) {
 
+            array[0] = columna;
+            array[1] = fila;
+        } else {
+
+            array[0] = fila;
+            array[1] = columna;
+        }
     }
 
 
     static boolean comprobarFyC(String simbolo) {
         String[] temp = new String[3];
-        int valorPrimero, valorSegundo, incrementer = 1, k_ = 0;
+        int valP, valS, inc = 1, s = 0;
         for (int x = 0; x < 2; x++) {
             for (int i = 0; i < gui.length; i++) {
                 for (int j = 0, contTemp = 0; j < gui[i].length; j++) {
                     if (x > 0) {
-                        valorPrimero = j;
-                        valorSegundo = i;
+                        valP = j;
+                        valS = i;
                     } else {
-                        valorPrimero = i;
-                        valorSegundo = j;
+                        valP = i;
+                        valS = j;
                     }
-                    temp[j] = gui[valorPrimero][valorSegundo];
-                    if (gui[valorPrimero][valorSegundo].equals(simbolo)) {
+                    temp[j] = gui[valP][valS];
+                    if (gui[valP][valS].equals(simbolo)) {
                         contTemp++;
                         if (contTemp > 2) {
                             return true;
@@ -184,34 +163,38 @@ public class Main {
                 }
                 defensa(temp, i, x, simbolo);
             }
-            for (int z = 0, k = k_, cont = 0; z < gui.length; z++, k += incrementer) {
+            for (int z = 0, k = s, contTemp = 0; z < gui.length; z++, k += inc) {
                 temp[z] = gui[z][k];
                 if (gui[z][k].equals(simbolo)) {
-                    cont++;
-                    if (cont > 2) return true;
+                    contTemp++;
+                    if (contTemp > 2) return true;
                 }
             }
-            defensa(temp, incrementer, 3, simbolo);
-            k_ = 2;
-            incrementer = -1;
+            defensa(temp, inc, 3, simbolo);
+            inc = -1;
+            s = 2;
         }
         return false;
     }
 
     static void mostrarResultado() {
-        System.out.println("<---- Resultado de partida ---->");
+        System.out.println(COLOR_AMARILLO + "<---- Resultado de partida ---->" + COLOR_INICIAL);
         representarTablero();
-        System.out.println("<---- Resultado de partida ---->");
+        System.out.println(COLOR_AMARILLO + "<---- Resultado de partida ---->" + COLOR_INICIAL);
     }
 
     static void comprobarGanador(String simbolo) {
-        if (comprobarFyC(simbolo)) {
+        if (contadorTurnos == 5) {
             mostrarResultado();
-            System.out.println("Ha ganado el jugador --> " + simbolo);
+            System.out.println("Ha empatado contra la máquina, no esta nada mal, si la ganas te regalo 1 BTC");
             terminarPartida();
-        } else if (simbolo.equalsIgnoreCase(varO)) {
-            System.out.println("ocurre");
-            representarTablero();
+        } else if (comprobarFyC(simbolo)) {
+            mostrarResultado();
+            System.out.println(COLOR_MORADO + "Ha ganado el jugador " + COLOR_INICIAL + "--> " + simbolo);
+            if (simbolo.equals(varO))
+                System.out.println("Te ha ganado una máquina, yo me sentiría mal conmigo mismo...");
+            else System.out.println("No se como lo has hecho pero acabas de ganar a la máquina");
+            terminarPartida();
         }
     }
 
@@ -234,8 +217,8 @@ public class Main {
 
     static void modificarTableroU() {
         gui[tempPosicionU[0]][tempPosicionU[1]] = varX;
-        comprobarGanador(varX);
         contadorTurnos++;
+        comprobarGanador(varX);
     }
 
     static void fill() {
