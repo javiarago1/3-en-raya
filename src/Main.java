@@ -10,10 +10,10 @@ public class Main {
     static int respuesta;
     static int[] tempPosicionU = new int[2];
     static int[] tempPosicionM = new int[2];
+    static int[] tempPosicionG = new int[2];
     static int contadorTurnos;
     static boolean amenaza;
-    static boolean fin,ganar;
-    static int ocurrenciasO;
+    static boolean fin, ganar;
     static Random rd = new Random();
 
 
@@ -52,15 +52,15 @@ public class Main {
 
     static void modificarTableroM() {
         if (ganar) {
-            gui[tempPosicionM[0]][tempPosicionM[1]]=varO;
-            ganar=false;
-        }
-
-        else if (amenaza) {
+            System.out.println(tempPosicionM[0]);
+            System.out.println(tempPosicionM[1]);
+            gui[tempPosicionG[0]][tempPosicionG[1]] = varO;
+            ganar = false;
+        } else if (amenaza) {
             gui[tempPosicionM[0]][tempPosicionM[1]] = varO;
             amenaza = false;
         } else {
-            if (contadorTurnos <= 1) {
+            if (contadorTurnos == 1) {
                 switch (respuesta) {
                     case 1, 3, 7, 9, 2, 4, 6, 8 -> gui[1][1] = varO;
                     default -> {
@@ -73,7 +73,6 @@ public class Main {
                 int[] array = devolverLugar();
                 assert array != null;
                 gui[array[0]][array[1]] = varO;
-
             }
         }
         comprobarGanador(varO);
@@ -89,19 +88,21 @@ public class Main {
         if (!respuesta_terminate.equals("N")) {
             fin = true;
             contadorTurnos = 0;
+            amenaza=false;
             fill();
         } else {
             System.exit(0);
         }
     }
 
-
-    static void defensa(String[] tempArray, int fila, int x) {
-        ocurrenciasO=0;
+    static void defensa(String[] tempArray, int fila, int x, String simbolo) {
+        if (simbolo.equals(varX)) {
+        int ocurrenciasO = 0;
         int contador = 0;
         int columna = 0;
         for (int i = 0; i < tempArray.length; i++) {
             if (tempArray[i].equals(varX)) {
+                ocurrenciasO--;
                 contador++;
             } else if (tempArray[i].equals(varO)) {
                 ocurrenciasO++;
@@ -118,39 +119,42 @@ public class Main {
                 }
             }
         }
-        if (ocurrenciasO == 2){
-            System.out.println("Posicion ganar x: "+fila+ " y: "+columna);
-            if (x == 0) {
-                System.out.println("1 Solucionar en x: " + fila + " y " + columna);
-                tempPosicionM[0] = fila;
-                tempPosicionM[1] = columna;
-            } else if (x == 1) {
-                System.out.println("2 Solucionar en x: " + columna + " y " + fila);
-                tempPosicionM[0] = columna;
-                tempPosicionM[1] = fila;
-            } else {
-                System.out.println("3 Solucionar en x: " + columna + " y " + fila);
-                tempPosicionM[0] = fila;
-                tempPosicionM[1] = columna;
+            System.out.println("contadodor de los cirkulitos: " + ocurrenciasO);
+            if (ocurrenciasO == 2) {
+                if (x == 0) {
+                    System.out.println("1 Solucionar en x: " + fila + " y " + columna);
+                    tempPosicionG[0] = fila;
+                    tempPosicionG[1] = columna;
+                } else if (x == 1) {
+                    System.out.println("2 Solucionar en x: " + columna + " y " + fila);
+                    tempPosicionG[0] = columna;
+                    tempPosicionG[1] = fila;
+                } else {
+                    System.out.println("3 Solucionar en x: " + columna + " y " + fila);
+                    tempPosicionG[0] = fila;
+                    tempPosicionG[1] = columna;
+                }
+                System.out.println("Procedemos a mostrar los resultados -- -- - -> ");
+                System.out.println(tempPosicionG[0]);
+                System.out.println(tempPosicionG[1]);
+                System.out.println("dsdasds");
+                ganar = true;
+            } else if (contador == 2) {
+                if (x == 0) {
+                    System.out.println("1 Solucionar en x: " + fila + " y " + columna);
+                    tempPosicionM[0] = fila;
+                    tempPosicionM[1] = columna;
+                } else if (x == 1) {
+                    System.out.println("2 Solucionar en x: " + columna + " y " + fila);
+                    tempPosicionM[0] = columna;
+                    tempPosicionM[1] = fila;
+                } else {
+                    System.out.println("3 Solucionar en x: " + columna + " y " + fila);
+                    tempPosicionM[0] = fila;
+                    tempPosicionM[1] = columna;
+                }
+                amenaza = true;
             }
-            ganar = true;
-        }
-       else  if (contador == 2) {
-            if (x == 0) {
-                System.out.println("1 Solucionar en x: " + fila + " y " + columna);
-                tempPosicionM[0] = fila;
-                tempPosicionM[1] = columna;
-            } else if (x == 1) {
-                System.out.println("2 Solucionar en x: " + columna + " y " + fila);
-                tempPosicionM[0] = columna;
-                tempPosicionM[1] = fila;
-            } else {
-                System.out.println("3 Solucionar en x: " + columna + " y " + fila);
-                tempPosicionM[0] = fila;
-                tempPosicionM[1] = columna;
-            }
-            System.out.println("amenaza");
-            amenaza = true;
         }
 
 
@@ -178,7 +182,7 @@ public class Main {
                         }
                     }
                 }
-                defensa(temp, i, x);
+                defensa(temp, i, x, simbolo);
             }
             for (int z = 0, k = k_, cont = 0; z < gui.length; z++, k += incrementer) {
                 temp[z] = gui[z][k];
@@ -187,7 +191,7 @@ public class Main {
                     if (cont > 2) return true;
                 }
             }
-            defensa(temp, incrementer, 3);
+            defensa(temp, incrementer, 3, simbolo);
             k_ = 2;
             incrementer = -1;
         }
