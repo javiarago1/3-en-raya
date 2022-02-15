@@ -2,15 +2,9 @@ import java.util.Scanner;
 
 public class Main {
 
-    static final String COLOR_MORADO = "\u001B[35m";
-    static final String COLOR_AMARILLO = "\u001B[33m";
-    static final String COLOR_AZUL = "\u001B[34m";
-    static final String COLOR_X = "\u001B[32m";
-    static final String COLOR_O = "\u001B[31m";
-    static final String COLOR_INICIAL = "\u001B[0m";
     static final String[][] gui = new String[3][3];
-    static final String varX = COLOR_X + "x" + COLOR_INICIAL;
-    static final String varO = COLOR_O + "\u00F8" + COLOR_INICIAL;
+    static final String varX ="x";
+    static final String varO = "\u00F8";
     static Scanner sc = new Scanner(System.in);
     static String respuesta_terminate = "";
     static int respuesta;
@@ -27,9 +21,9 @@ public class Main {
             fin = false;
             representarTablero();
             do {
-                System.out.print(COLOR_MORADO + "Indique una posición > " + COLOR_INICIAL);
+                System.out.print("Indique una posición > ");
                 while (!sc.hasNextInt()) {
-                    System.out.print(COLOR_MORADO + "Indique una posición > " + COLOR_INICIAL);
+                    System.out.print("Indique una posición > ");
                     sc.next();
                 }
                 respuesta = sc.nextInt();
@@ -80,7 +74,7 @@ public class Main {
     }
 
     static void terminarPartida() {
-        System.out.println(COLOR_AZUL + "¿Quieres seguir jugando? (S/N)" + COLOR_INICIAL);
+        System.out.println("¿Quieres seguir jugando? (S/N)");
         System.out.print("---> ");
         respuesta_terminate = sc.next();
 
@@ -173,9 +167,9 @@ public class Main {
     }
 
     static void mostrarResultado() {
-        System.out.println(COLOR_AMARILLO + "<---- Resultado de partida ---->" + COLOR_INICIAL);
+        System.out.println("<---- Resultado de partida ---->");
         representarTablero();
-        System.out.println(COLOR_AMARILLO + "<---- Resultado de partida ---->" + COLOR_INICIAL);
+        System.out.println("<---- Resultado de partida ---->");
     }
 
     static void comprobarGanador(String simbolo) {
@@ -185,7 +179,7 @@ public class Main {
             terminarPartida();
         } else if (comprobarFyC(simbolo)) {
             mostrarResultado();
-            System.out.println(COLOR_MORADO + "Ha ganado el jugador " + COLOR_INICIAL + "--> " + simbolo);
+            System.out.println("Ha ganado el jugador --> " + simbolo);
             if (simbolo.equals(varO))
                 System.out.println("Te ha ganado una máquina, yo me sentiría mal conmigo mismo...");
             else System.out.println("No se como lo has hecho pero acabas de ganar a la máquina");
