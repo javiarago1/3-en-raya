@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.Scanner;
 
 
@@ -21,7 +20,6 @@ public class Main {
     static int contadorTurnos;
     static boolean amenaza;
     static boolean fin, ganar;
-
 
     public static void main(String[] args) {
         fill();
