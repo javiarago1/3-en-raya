@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
-
 public class Main {
+
     static final String COLOR_MORADO = "\u001B[35m";
     static final String COLOR_AMARILLO = "\u001B[33m";
     static final String COLOR_AZUL = "\u001B[34m";
@@ -126,11 +126,9 @@ public class Main {
 
     static void solucionMaquina(int x, int fila, int columna, int[] array) {
         if (x == 1) {
-
             array[0] = columna;
             array[1] = fila;
         } else {
-
             array[0] = fila;
             array[1] = columna;
         }
